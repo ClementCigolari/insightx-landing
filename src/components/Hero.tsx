@@ -13,10 +13,13 @@ export default function Hero() {
       />
 
       <h1 className="text-3xl sm:text-5xl font-bold mt-6">
-        Analyse. Stratégie. Scénarios.
+        Insight-X : Analyse stratégique et immersive du football européen et mondial
       </h1>
+
       <p className="text-lg sm:text-xl text-gray-400 mt-4 max-w-xl">
-        Insight-X vous plonge au cœur des matchs avec une méthode unique et des scénarios immersifs.
+        Plongez au cœur des matchs avec Insight-X, votre allié incontournable pour des analyses 
+        détaillées, des scénarios immersifs et des statistiques exclusives. Vivez chaque compétition 
+        avec passion et expertise.
       </p>
 
       <div className="mt-8 flex flex-col sm:flex-row gap-4">
