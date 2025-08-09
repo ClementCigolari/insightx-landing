@@ -7,6 +7,7 @@ import { RecapitulatifProvider } from "@/context/RecapitulatifContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { SupabaseProvider } from "@/context/SupabaseProvider";
 import SyncCookie from "@/components/SyncCookie"; // ✅ Ajout ici
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,17 +34,18 @@ export default function RootLayout({
     <html lang="fr">
       <head>
         {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-C3HPY37296"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-C3HPY37296');
-            `,
-          }}
-        />
+        <Script
+  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
+  strategy="afterInteractive"
+/>
+<Script id="ga-init" strategy="afterInteractive">
+  {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C3HPY37296');
+  `}
+</Script>
 
         {/* Open Graph */}
         <meta property="og:title" content="Insight-X : L'analyse immersive du football" />

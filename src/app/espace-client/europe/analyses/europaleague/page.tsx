@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAnalysesByChampionnat } from "@/lib/supabase";
 
-export default function Ligue1Page() {
+type Analyse = {
+  id: string | number;
+  titre: string;
+  contenu: string;
+  created_at: string;
+  decouverte?: boolean;
+};
+
+export default function EuropaLeaguePage() {
   const router = useRouter();
-  const [analyses, setAnalyses] = useState<any[]>([]);
+  const [analyses, setAnalyses] = useState<Analyse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formule, setFormule] = useState("decouverte");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("insightx_user");
@@ -16,13 +23,11 @@ export default function Ligue1Page() {
       router.push("/connexion");
       return;
     }
-
     const user = JSON.parse(storedUser);
-    setFormule(user.formule || "decouverte");
 
     const fetchAnalyses = async () => {
       const allAnalyses = await getAnalysesByChampionnat("europaleague");
-      const filtered = allAnalyses.filter((a: any) =>
+      const filtered = allAnalyses.filter((a: Analyse) =>
         user.formule === "decouverte" ? a.decouverte === true : true
       );
       setAnalyses(filtered);
@@ -37,7 +42,7 @@ export default function Ligue1Page() {
   }
 
   if (!analyses || analyses.length === 0) {
-    return <p className="text-white text-center py-10">Aucune analyse disponible pour l'Europa League.</p>;
+    return <p className="text-white text-center py-10">Aucune analyse disponible pour l&apos;Europa League.</p>;
   }
 
   return (

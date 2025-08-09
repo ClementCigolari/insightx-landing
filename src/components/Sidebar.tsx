@@ -11,19 +11,10 @@ import {
   Flag,
   XCircle,
   User,
-  BarChart2
+  BarChart2,
+  type LucideIcon
 } from "lucide-react";
 import Image from "next/image";
-
-const navItems = [
-  { label: "Tableau de bord", href: "/espace-client", icon: LayoutDashboard },
-  { label: "Mes championnats", href: "/espace-client/championnats", icon: Trophy },
-  { label: "Europe", href: "/espace-client/europe", icon: Globe },
-  { label: "Compétitions internationales", href: "/espace-client/internationale", icon: Flag },
-  { label: "Analyses non confirmées", href: "/espace-client/echoues", icon: XCircle },
-  { label: "Mon compte", href: "/espace-client/compte", icon: User },
-  { label: "Statistiques", href: "/espace-client/rapport", icon: BarChart2 },
-];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -32,15 +23,13 @@ export default function Sidebar() {
 
   useEffect(() => {
     const userDataRaw = localStorage.getItem("insightx_user");
-    if (userDataRaw) {
-      try {
-        const userData = JSON.parse(userDataRaw);
-        console.log("✅ Données récupérées :", userData);
-        setUserFormule(userData.formule || "");
-        setUserOptions(userData.options || []);
-      } catch (error) {
-        console.error("Erreur de parsing des données utilisateur :", error);
-      }
+    if (!userDataRaw) return;
+    try {
+      const userData = JSON.parse(userDataRaw);
+      setUserFormule(userData.formule || "");
+      setUserOptions(userData.options || []);
+    } catch (error) {
+      console.error("Erreur de parsing des données utilisateur :", error);
     }
   }, []);
 
@@ -111,7 +100,7 @@ function LinkItem({
   pathname,
 }: {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   pathname: string;
 }) {

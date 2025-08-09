@@ -63,7 +63,7 @@ export default function AnalyseManqueePage() {
   return (
     <div className="min-h-screen bg-black text-white px-6 py-10">
       <h1 className="text-3xl font-bold mb-8 text-center">
-        🧠 Poster un compte-rendu d'analyse manquée
+        🧠 Poster un compte-rendu d&apos;analyse manquée
       </h1>
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">

@@ -2,24 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase";
 
+type InsightUser = {
+  prenom: string;
+  formule: string;
+  options: string[];
+  ligue: string;
+};
 
 export default function EspaceClient() {
-  const [prenom, setPrenom] = useState("");
-  const [formule, setFormule] = useState("");
-  const [options, setOptions] = useState("");
-  const [ligue, setLigue] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [prenom, setPrenom] = useState<string>("");
+  const [formule, setFormule] = useState<string>("");
+  const [options, setOptions] = useState<string[]>([]);
+  const [ligue, setLigue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  const optionsArray = Array.isArray(options) ? options : [options];
+  const optionsArray = Array.isArray(options) ? options : [];
 
-  const capitalize = (str: any) => {
-    const value = String(str);
-    return value.charAt(0).toUpperCase() + value.slice(1);
+  const capitalize = (val: unknown): string => {
+    if (typeof val === "string") {
+      return val ? val.charAt(0).toUpperCase() + val.slice(1) : "";
+    }
+    if (val == null) return "";
+    const str = String(val);
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
   };
-
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("insightx_user");
@@ -29,7 +37,8 @@ export default function EspaceClient() {
         return;
       }
 
-      const userData = JSON.parse(storedUser);
+      const userData: Partial<InsightUser> = JSON.parse(storedUser);
+
       if (!userData || !userData.prenom || !userData.formule) {
         router.push("/connexion");
         return;
@@ -37,16 +46,21 @@ export default function EspaceClient() {
 
       setPrenom(userData.prenom);
       setFormule(userData.formule);
-      setOptions(userData.options || []);
+      setOptions(Array.isArray(userData.options) ? userData.options : []);
       setLigue(userData.ligue || "Non précisée");
       setLoading(false);
     } catch (err) {
       console.error("Erreur lors de la récupération du user :", err);
       router.push("/connexion");
     }
-  }, []);
+  }, [router]); // ✅ ajout de router pour corriger le warning
 
-  if (loading) return <p className="text-center text-white py-10">Chargement de ton espace...</p>;
+  if (loading)
+    return (
+      <p className="text-center text-white py-10">
+        Chargement de ton espace...
+      </p>
+    );
 
   const CHAMPIONNATS_MAP: Record<string, string> = {
     "FR-L1": "Ligue 1",

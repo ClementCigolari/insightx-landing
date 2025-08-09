@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRecapitulatif } from "@/hooks/useRecapitulatif"; // adapte le chemin si besoin
 
 export default function FormulePremium() {
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>([]);
@@ -273,7 +272,7 @@ export default function FormulePremium() {
                      <div className="mt-6">
               <Link href="/">
                 <span className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300">
-                  Retour à l'accueil
+                  Retour à l&apos;accueil
                   </span>
             </Link>
           </div>

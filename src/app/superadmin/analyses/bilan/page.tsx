@@ -11,7 +11,6 @@ const supabase = createClient(
 
 export default function BilanRapportPage() {
   const router = useRouter();
-  const [prenom, setPrenom] = useState("");
   const [files, setFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -28,7 +27,6 @@ export default function BilanRapportPage() {
       router.push("/connexion");
       return;
     }
-    setPrenom(userData.prenom);
   }, [router]);
 
   const handleUpload = async (e: React.FormEvent) => {

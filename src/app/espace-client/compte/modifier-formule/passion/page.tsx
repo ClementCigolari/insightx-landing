@@ -10,11 +10,6 @@ export default function FormulePassion() {
   const { setRecapitulatif } = useRecapitulatif();
   const router = useRouter();
 
-  const handleSelectLeague = (league: string) => {
-    setSelectedLeague(league);
-    setSelectedPlan("");
-  };
-
   const handleSelectPlan = (plan: string) => {
     setSelectedPlan(plan);
   };

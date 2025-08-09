@@ -156,7 +156,7 @@ export default function FormuleDecouverte() {
         <div className="text-center">
           <Link href="/">
             <span className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300">
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </span>
           </Link>
         </div>

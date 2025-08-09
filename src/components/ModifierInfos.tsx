@@ -3,43 +3,57 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ModifierInfos({ user }: { user: any }) {
-  const router = useRouter();
-  const [email, setEmail] = useState(user.email || "");
-  const [adresse, setAdresse] = useState(user.adresse || "");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+type UserMinimal = {
+  email: string;
+  adresse?: string | null;
+};
 
-  const handleSubmit = async (e: any) => {
+export default function ModifierInfos({ user }: { user: UserMinimal }) {
+  const router = useRouter();
+  const [email, setEmail] = useState<string>(user.email || "");
+  const [adresse, setAdresse] = useState<string>(user.adresse ?? "");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     const ancienEmail = user.email;
-    const payload: any = { ancienEmail };
+    const payload: {
+      ancienEmail: string;
+      nouvelEmail?: string;
+      nouvelleAdresse?: string;
+    } = { ancienEmail };
 
     if (email && email !== ancienEmail) payload.nouvelEmail = email;
     if (adresse) payload.nouvelleAdresse = adresse;
 
-    const res = await fetch("/api/modifier-utilisateur", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch("/api/modifier-utilisateur", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      const data: { success?: boolean; message?: string } = await res.json();
 
-    if (data.success) {
-      setMessage("Informations mises à jour. Redirection en cours...");
-      localStorage.removeItem("insightx_user");
-      setTimeout(() => {
-        router.push("/connexion");
-      }, 2000);
-    } else {
-      setMessage(data.message || "Erreur lors de la mise à jour.");
+      if (data.success) {
+        setMessage("Informations mises à jour. Redirection en cours...");
+        localStorage.removeItem("insightx_user");
+        setTimeout(() => {
+          router.push("/connexion");
+        }, 2000);
+      } else {
+        setMessage(data.message || "Erreur lors de la mise à jour.");
+      }
+    } catch (err) {
+      setMessage("Une erreur est survenue. Réessaie dans un instant.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -50,7 +64,7 @@ export default function ModifierInfos({ user }: { user: any }) {
           type="email"
           value={email}
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
           className="w-full px-4 py-2 rounded border border-gray-300"
         />
       </div>
@@ -60,7 +74,7 @@ export default function ModifierInfos({ user }: { user: any }) {
         <input
           type="text"
           value={adresse}
-          onChange={(e) => setAdresse(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAdresse(e.target.value)}
           className="w-full px-4 py-2 rounded border border-gray-300"
         />
       </div>

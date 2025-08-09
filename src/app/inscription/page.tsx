@@ -6,6 +6,9 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useCheckout } from "@/context/CheckoutContext";
+import { useMemo } from "react";
+import { useCallback } from "react";
+
 
 const getPriceText = (formule: string, options: string[] = []) => {
   let base = 0;
@@ -64,7 +67,6 @@ const getPriceText = (formule: string, options: string[] = []) => {
 export default function InscriptionPage() {
   const router = useRouter();
   const { setDonneesClient, setPriceIds } = useCheckout();
-  const [priceIds, setLocalPriceIds] = useState<string[]>([]);
 
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -81,54 +83,101 @@ export default function InscriptionPage() {
   const [formule, setFormule] = useState<string>("");
   const [options, setOptions] = useState<string[]>([]);
 
+  const leagueIdToName = useMemo(
+    () => ({
+      "FR-L1": "Ligue 1",
+      "FR-CDF": "Coupe de France",
+      "UK-PL": "Premier League",
+      "UK-CH": "Championship",
+      "UK-FAC": "FA Cup",
+      "UK-CC": "Carabao Cup",
+      "ES-L1": "La Liga",
+      "ES-L2": "La Liga 2",
+      "ES-CDR": "Copa del Rey",
+      "IT-A": "Serie A",
+      "IT-B": "Serie B",
+      "IT-CI": "Coppa Italia",
+      "DE-BUN": "Bundesliga",
+      "NL-ERE": "Eredivisie",
+      "PT-LP": "Liga Portugal",
+      "BE-PL": "Pro League",
+      "AT-ADM": "Admiral Bundesliga",
+      "SE-ALL": "Allsvenskan",
+      "CH-SL": "Super League",
+      "DK-SUP": "Superliga",
+      "NO-ELI": "Eliteserien",
+      "SCO-PRE": "Premiership",
+      "PL-EKS": "Ekstraklasa",
+      "RU-PL": "Premier League (Russie)",
+      "UA-PL": "Premier League (Ukraine)",
+      "HR-HNL": "1. HNL",
+    }),
+    []
+  );
+  
+  const getLeagueName = useCallback(
+    (id?: string): string => {
+      if (!id) return "non spécifié";
+      if (id === "europe") return "Europe";
+      return leagueIdToName[id as keyof typeof leagueIdToName] ?? id;
+    },
+    [leagueIdToName]
+  );
+  
   useEffect(() => {
     const recapFromStorage = localStorage.getItem("insightx_recap");
-    if (recapFromStorage) {
-      try {
-        const recap = JSON.parse(recapFromStorage);
-        const { formule, plan, league, options = [] } = recap;
-  
-        // 👇 On stocke formule et options dans les états
-        setFormule(formule);
-        setOptions(options);
-  
-        const formuleNom: Record<string, string> = {
-          decouverte: "Découverte",
-          passion: "Passion",
-          premium: "Premium",
-          ultra: "Ultra",
-        };
-  
-        const texte =
-          `✅ ${formuleNom[formule] || "Formule inconnue"}\n` +
-          `📌 Championnat : ${
-            formule === "ultra"
-              ? "Ligue 1, Premier League, Serie A, Liga, Bundesliga, Coupes d'Europe, Compétitions internationales"
-              : formule === "premium"
-              ? "Ligue 1, Premier League, Serie A, Liga, Bundesliga"
-              : league
-              ? getLeagueName(league)
-              : "non spécifié"
-          }\n` +
-          `📦 Option : ${
-            options.length > 0 ? options.map(getLeagueName).join(", ") : "Sans engagement"
-          }\n` +
-          `💰 Prix : ${getPriceText(formule, options)}`;
-  
-        setRecapTexte(texte);
-  
-        if (formule === "premium" || formule === "ultra") {
-          const supp = options.filter((opt: string) => opt !== "europe");
-          setChampionnatsSupp(supp);
-        }
-      } catch (e) {
-        console.error("Erreur parsing récapitulatif :", e);
-        setRecapTexte("Erreur lors du chargement du récapitulatif.");
-      }
-    } else {
+    if (!recapFromStorage) {
       setRecapTexte("Aucun récapitulatif disponible.");
+      return;
     }
-  }, []);
+  
+    try {
+      const recap = JSON.parse(recapFromStorage);
+      const { formule, league, options = [] } = recap as {
+        formule: string;
+        league?: string;
+        options?: string[];
+      };
+  
+      setFormule(formule);
+      setOptions(options);
+  
+      const formuleNom: Record<string, string> = {
+        decouverte: "Découverte",
+        passion: "Passion",
+        premium: "Premium",
+        ultra: "Ultra",
+      };
+  
+      const championnatTexte =
+        formule === "ultra"
+          ? "Ligue 1, Premier League, Serie A, Liga, Bundesliga, Coupes d'Europe, Compétitions internationales"
+          : formule === "premium"
+          ? "Ligue 1, Premier League, Serie A, Liga, Bundesliga"
+          : getLeagueName(league);
+  
+      const optionsTexte =
+        options.length > 0
+          ? options.map((opt: string) => getLeagueName(opt)).join(", ")
+          : "Sans engagement";
+  
+      const texte =
+        `✅ ${formuleNom[formule] || "Formule inconnue"}\n` +
+        `📌 Championnat : ${championnatTexte}\n` +
+        `📦 Option : ${optionsTexte}\n` +
+        `💰 Prix : ${getPriceText(formule, options)}`;
+  
+      setRecapTexte(texte);
+  
+      if (formule === "premium" || formule === "ultra") {
+        const supp = options.filter((opt: string) => opt !== "europe");
+        setChampionnatsSupp(supp);
+      }
+    } catch (e) {
+      console.error("Erreur parsing récapitulatif :", e);
+      setRecapTexte("Erreur lors du chargement du récapitulatif.");
+    }
+  }, [getLeagueName]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -199,22 +248,16 @@ console.log("✅ Données client sauvegardées dans le contexte.");
     
     console.log("💳 IDs à facturer :", priceIds);
      setPriceIds(priceIds); // ⬅️ Contexte global
-     setLocalPriceIds(priceIds); // ⬅️ State local
 
      // 🔁 Récupération du recap
      const recap = JSON.parse(localStorage.getItem("insightx_recap") || "{}");
-
-     const dateNaissanceISO = dateNaissance
-  ? new Date(Date.UTC(dateNaissance.getFullYear(), dateNaissance.getMonth(), dateNaissance.getDate()))
-      .toISOString().split('T')[0]
-  : null;
      
      // 🗂️ Enregistrement dans le localStorage avec le mot de passe 
      localStorage.setItem("insightx_client", JSON.stringify({
        nom,
        prenom,
        email,
-       dateNaissance,
+       dateNaissance: formattedDateNaissance, // ✅ remplace l’ancien "dateNaissance"
        adresse,
        mot_de_passe: motDePasse,
        formule: recap.formule || null,
@@ -227,74 +270,6 @@ console.log("✅ Données client sauvegardées dans le contexte.");
 
   const champStyle =
     "border rounded-lg px-4 py-2 bg-white text-black dark:bg-gray-800 dark:text-white dark:border-gray-700";
-
-    const handlePaiement = async () => {
-      try {
-        const res = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            priceIds,
-            client: {
-              nom,
-              prenom,
-              email,
-              dateNaissance,
-              adresse,
-            },
-          }),
-        });
-    
-        const data = await res.json();
-    
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert("Erreur : aucune URL de session Stripe retournée.");
-        }
-      } catch (err) {
-        console.error("Erreur lors du paiement :", err);
-        alert("Une erreur est survenue lors de la redirection Stripe.");
-      }
-    };  
-
-    const getLeagueName = (id: string): string => {
-      if (id === "europe") return "Europe"; // majuscule propre
-      return leagueIdToName[id] || id; // fallback si non trouvé
-    };
-
-  const leagueIdToName: Record<string, string> = {
-    "FR-L1": "Ligue 1",
-    "FR-CDF": "Coupe de France",
-    "UK-PL": "Premier League",
-    "UK-CH": "Championship",
-    "UK-FAC": "FA Cup",
-    "UK-CC": "Carabao Cup",
-    "ES-L1": "La Liga",
-    "ES-L2": "La Liga 2",
-    "ES-CDR": "Copa del Rey",
-    "IT-A": "Serie A",
-    "IT-B": "Serie B",
-    "IT-CI": "Coppa Italia",
-    "DE-BUN": "Bundesliga",
-    "NL-ERE": "Eredivisie",
-    "PT-LP": "Liga Portugal",
-    "BE-PL": "Pro League",
-    "AT-ADM": "Admiral Bundesliga",
-    "SE-ALL": "Allsvenskan",
-    "CH-SL": "Super League",
-    "DK-SUP": "Superliga",
-    "NO-ELI": "Eliteserien",
-    "SCO-PRE": "Premiership",
-    "PL-EKS": "Ekstraklasa",
-    "RU-PL": "Premier League (Russie)",
-    "UA-PL": "Premier League (Ukraine)",
-    "HR-HNL": "1. HNL",
-  };
-
-  
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md mt-10 text-black dark:text-white">

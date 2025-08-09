@@ -1,13 +1,7 @@
 "use client";
-import Link from "next/link";
-import { useState } from "react";
+import Link from "next/link"
 
 export default function FormuleUltraPremium() {
-  const [isAvailable, setIsAvailable] = useState(false); // ✅ Désactivé par défaut
-
-  const handleApply = () => {
-    alert("Un membre de l’équipe prendra contact avec vous sous 24h pour finaliser la candidature.");
-  };
 
   return (
     <div className="relative min-h-screen pb-28 bg-black text-white px-6 sm:px-10 pt-20">
@@ -54,7 +48,7 @@ export default function FormuleUltraPremium() {
       <div className="text-center pb-20">
         <Link href="/">
           <span className="inline-block mt-4 rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300">
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </span>
         </Link>
       </div>

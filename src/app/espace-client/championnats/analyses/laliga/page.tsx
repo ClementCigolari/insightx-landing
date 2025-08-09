@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAnalysesByChampionnat } from "@/lib/supabase";
 
-export default function Ligue1Page() {
+type Analyse = {
+  id: string;
+  titre: string;
+  contenu: string;
+  decouverte: boolean;
+  created_at: string; // ISO date
+};
+
+export default function LaLigaAnalysesPage() {
   const router = useRouter();
-  const [analyses, setAnalyses] = useState<any[]>([]);
+  const [analyses, setAnalyses] = useState<Analyse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formule, setFormule] = useState("decouverte");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("insightx_user");
@@ -18,12 +25,12 @@ export default function Ligue1Page() {
     }
 
     const user = JSON.parse(storedUser);
-    setFormule(user.formule || "decouverte");
+    const userFormule: string = user?.formule || "decouverte";
 
     const fetchAnalyses = async () => {
-      const allAnalyses = await getAnalysesByChampionnat("laliga");
-      const filtered = allAnalyses.filter((a: any) =>
-        user.formule === "decouverte" ? a.decouverte === true : true
+      const allAnalyses: Analyse[] = await getAnalysesByChampionnat("laliga");
+      const filtered = allAnalyses.filter((a) =>
+        userFormule === "decouverte" ? a.decouverte === true : true
       );
       setAnalyses(filtered);
       setLoading(false);
@@ -31,7 +38,6 @@ export default function Ligue1Page() {
 
     fetchAnalyses();
   }, [router]);
-
   if (loading) {
     return <p className="text-white text-center py-10">Chargement des analyses...</p>;
   }

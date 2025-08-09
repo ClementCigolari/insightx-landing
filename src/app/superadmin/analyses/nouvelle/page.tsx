@@ -20,7 +20,6 @@ export default function NouvelleAnalyse() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const [prenom, setPrenom] = useState("");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("insightx_user");
@@ -33,9 +32,8 @@ export default function NouvelleAnalyse() {
       router.push("/connexion");
       return;
     }
-    setPrenom(userData.prenom);
     setLoading(false);
-  }, []);
+  }, [router]);
 
   if (loading) {
     return <p className="text-white text-center py-10">Chargement en cours...</p>;
@@ -126,7 +124,7 @@ export default function NouvelleAnalyse() {
             <option value="coupe-de-france">Coupe de France</option>
             <option value="fa-cup">FA Cup</option>
             <option value="copa-del-rey">Coupe du Roi</option>
-            <option value="coppa-italia">Coupe d'Italie</option>
+            <option value="coppa-italia">Coupe d&apos;Italie</option>
             <option value="eredivisie">Eredivisie</option>
             <option value="liga-portugal">Liga Portugal</option>
             <option value="pro-league">Jupiler Pro League</option>

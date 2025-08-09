@@ -40,9 +40,17 @@ const session = await stripe.checkout.sessions.create({
   },
 });
 
-    return NextResponse.json({ url: session.url });
-  } catch (error: any) {
-    console.error("Erreur Stripe :", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+return NextResponse.json({ url: session.url });
+} catch (err: unknown) {
+  let message = "Erreur inconnue";
+
+  if (err instanceof Error) {
+    message = err.message;
+  } else if (typeof err === "string") {
+    message = err;
   }
+
+  console.error("Erreur Stripe :", message);
+  return NextResponse.json({ error: message }, { status: 500 });
+}
 }

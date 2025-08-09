@@ -20,10 +20,7 @@ export default function Connexion() {
       console.log("Tentative de login avec :", email, password);
   
       // Étape 1 : Connexion sécurisée avec Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
   
       if (authError) {
         console.error("Erreur Supabase Auth :", authError.message);
@@ -137,7 +134,7 @@ export default function Connexion() {
             onClick={() => router.push("/")}
             className="text-gray-400 hover:underline"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </button>
           <button
   type="button"

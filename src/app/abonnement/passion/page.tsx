@@ -11,11 +11,6 @@ export default function FormulePassion() {
   const { setRecapitulatif } = useRecapitulatif();
   const router = useRouter();
 
-  const handleSelectLeague = (league: string) => {
-    setSelectedLeague(league);
-    setSelectedPlan("");
-  };
-
   const handleSelectPlan = (plan: string) => {
     setSelectedPlan(plan);
   };
@@ -32,7 +27,7 @@ export default function FormulePassion() {
       plan: selectedPlan,
       league: selectedLeague,
       options: options,
-      prix: getPriceText(optionEurope),
+      prix: getPriceText(),
     };
   
     setRecapitulatif(recapData);
@@ -43,7 +38,7 @@ export default function FormulePassion() {
     }, 0);
   };
   
-  const getPriceText = (includeEurope: boolean) => {
+  const getPriceText = () => {
     if (selectedPlan === "Sans engagement") {
       const base = 9.99;
       const total = optionEurope ? base + 5 : base;
@@ -197,7 +192,7 @@ export default function FormulePassion() {
                   Option : <span className="text-green-400 font-semibold">Europe activée (+5€/mois)</span><br />
                 </>
               )}
-              <span className="text-green-400">Prix total : <strong>{getPriceText(optionEurope)}</strong></span>
+              <span className="text-green-400">Prix total : <strong>{getPriceText()}</strong></span>
             </p>
             <button
               className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition"
@@ -212,7 +207,7 @@ export default function FormulePassion() {
         <div className="text-center">
           <Link href="/">
             <span className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300">
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </span>
           </Link>
         </div>

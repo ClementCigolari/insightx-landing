@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAnalysesByChampionnat } from "@/lib/supabase";
 
-export default function Ligue1Page() {
+type Analyse = {
+  id: string;
+  titre: string;
+  contenu: string;
+  decouverte: boolean;
+  created_at: string; // timestamptz en BDD
+};
+
+export default function CoppaItaliaPage() {
   const router = useRouter();
-  const [analyses, setAnalyses] = useState<any[]>([]);
+  const [analyses, setAnalyses] = useState<Analyse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formule, setFormule] = useState("decouverte");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("insightx_user");
@@ -18,12 +25,12 @@ export default function Ligue1Page() {
     }
 
     const user = JSON.parse(storedUser);
-    setFormule(user.formule || "decouverte");
+    const userFormule: string = user?.formule || "decouverte";
 
     const fetchAnalyses = async () => {
-      const allAnalyses = await getAnalysesByChampionnat("coppa-italia");
-      const filtered = allAnalyses.filter((a: any) =>
-        user.formule === "decouverte" ? a.decouverte === true : true
+      const allAnalyses: Analyse[] = await getAnalysesByChampionnat("coppa-italia");
+      const filtered = allAnalyses.filter((a) =>
+        userFormule === "decouverte" ? a.decouverte === true : true
       );
       setAnalyses(filtered);
       setLoading(false);
@@ -37,12 +44,12 @@ export default function Ligue1Page() {
   }
 
   if (!analyses || analyses.length === 0) {
-    return <p className="text-white text-center py-10">Aucune analyse disponible pour la Coupe d'Italie.</p>;
+    return <p className="text-white text-center py-10">Aucune analyse disponible pour la Coupe d&apos;Italie.</p>;
   }
 
   return (
     <div className="px-6 py-10 text-white">
-      <h1 className="text-3xl font-bold mb-6 text-center">Coupe d'Italie – Analyses</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Coupe d&apos;Italie – Analyses</h1>
 
       <div className="space-y-4">
         {analyses.map((a) => (

@@ -47,7 +47,7 @@ export default function Competitions() {
         <h3 className="text-2xl font-semibold mb-4">Les autres championnats et coupes :</h3>
         <p className="text-gray-300 mb-4">
           🇳🇱 Eredivisie, 🇵🇹 Liga Portugal, 🇧🇪 Pro League,
-          Et bientôt d'autre c'est entre vos mains.
+          Et bientôt d&apos;autre c&apos;est entre vos mains.
         </p>
       </div>
     </section>

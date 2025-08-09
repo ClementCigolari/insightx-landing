@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -8,6 +9,15 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// Fichiers listés dans le bucket
+type ListedFile = {
+  name: string;
+  updated_at?: string | null;
+  created_at?: string | null;
+  metadata?: { size?: number } | null;
+};
+
+// Ce qu’on affiche
 type ImgItem = {
   name: string;
   url: string;
@@ -25,16 +35,12 @@ export default function RapportPage() {
       setErr(null);
       setLoading(true);
 
-      // ⚠️ Mets "" si tes fichiers sont à la racine du bucket,
-      // ou "charts" si tu les as mis dans ce dossier.
+      // "" si les fichiers sont à la racine du bucket, sinon "charts"
       const dossier = "charts";
 
       const { data: listed, error: listErr } = await supabase.storage
         .from("rapports")
-        .list(dossier, {
-          limit: 100,
-          sortBy: { column: "name", order: "asc" },
-        });
+        .list(dossier, { limit: 100, sortBy: { column: "name", order: "asc" } });
 
       if (listErr) {
         console.error("Erreur list:", listErr);
@@ -43,72 +49,59 @@ export default function RapportPage() {
         return;
       }
 
-      const fichiers =
-        (listed || []).filter((f) => /\.(png|jpe?g)$/i.test(f.name)) ?? [];
+      const fichiers: ListedFile[] = (listed ?? []) as unknown as ListedFile[];
+      const imagesSeules = fichiers.filter((f) => /\.(png|jpe?g)$/i.test(f.name));
 
-      // On génère des URL signées (marche même si le bucket est privé)
       const items: ImgItem[] = [];
-      for (const f of fichiers) {
+      for (const f of imagesSeules) {
         const fullPath = dossier ? `${dossier}/${f.name}` : f.name;
 
         const { data: signed, error: signErr } = await supabase.storage
           .from("rapports")
-          .createSignedUrl(fullPath, 60 * 60); // URL valable 1h
+          .createSignedUrl(fullPath, 60 * 60); // 1h
 
-        if (signErr) {
+        if (signErr || !signed?.signedUrl) {
           console.error("Erreur signedUrl:", signErr);
           continue;
         }
 
-        const url = `${signed.signedUrl}&v=${Date.now()}`;
-
         items.push({
           name: f.name,
-          url,
-          last_modified: (f as any).updated_at || (f as any).created_at,
-          size: (f as any).metadata?.size,
+          url: `${signed.signedUrl}&v=${Date.now()}`,
+          last_modified: f.updated_at ?? f.created_at ?? undefined,
+          size: f.metadata?.size,
         });
       }
 
-      // ---------- TRI PERSONNALISÉ ----------
-      const ordreTypes = ["safe", "fun", "super_fun", "live"];
-      const typeRegex = /(safe|super[_-]?fun|fun|live)/i;
-
+      // ------- Tri (type -> ligue -> nom) -------
+      const ordreTypes = ["safe", "fun", "super_fun", "live"] as const;
       const getTypeKey = (name: string) => {
         const lower = name.toLowerCase();
         if (lower.includes("super_fun") || lower.includes("super-fun") || lower.includes("superfun")) return "super_fun";
         if (lower.includes("safe")) return "safe";
         if (lower.includes("fun")) return "fun";
         if (lower.includes("live")) return "live";
-        return "zzz"; // inconnu → fin
+        return "zzz";
       };
-
       const getLeaguePrefix = (name: string) => {
-        // Récupère ce qu’il y a avant le mot-clé de type
-        const m = name.toLowerCase().match(new RegExp(`^(.*?)(?:[_-])?(?:${typeRegex.source})`));
-        // m?.[1] = préfixe "ligue_1", "premierleague", etc.
+        const m = name.toLowerCase().match(/^(.*?)(?:[_-])?(?:safe|super[_-]?fun|fun|live)/i);
         return m?.[1] ?? name.toLowerCase();
       };
 
       items.sort((a, b) => {
-        const ta = getTypeKey(a.name);
-        const tb = getTypeKey(b.name);
-        const pa = ordreTypes.indexOf(ta);
-        const pb = ordreTypes.indexOf(tb);
+        const pa = ordreTypes.indexOf(getTypeKey(a.name) as typeof ordreTypes[number]);
+        const pb = ordreTypes.indexOf(getTypeKey(b.name) as typeof ordreTypes[number]);
         const priA = pa === -1 ? ordreTypes.length : pa;
         const priB = pb === -1 ? ordreTypes.length : pb;
-
         if (priA !== priB) return priA - priB;
 
-        // même type → sous-tri par "league prefix"
         const la = getLeaguePrefix(a.name);
         const lb = getLeaguePrefix(b.name);
         if (la !== lb) return la.localeCompare(lb);
 
-        // à défaut, tri alphabétique complet
         return a.name.localeCompare(b.name);
       });
-      // ---------- FIN TRI ----------
+      // ------- fin tri -------
 
       setImages(items);
       setLoading(false);
@@ -117,15 +110,9 @@ export default function RapportPage() {
     loadImages();
   }, []);
 
-  if (loading) {
-    return <p className="text-white text-center py-10">Chargement des rapports…</p>;
-  }
-  if (err) {
-    return <p className="text-red-400 text-center py-10">Erreur: {err}</p>;
-  }
-  if (images.length === 0) {
-    return <p className="text-white text-center py-10">Aucune image publiée pour l’instant.</p>;
-  }
+  if (loading) return <p className="text-white text-center py-10">Chargement des rapports…</p>;
+  if (err) return <p className="text-red-400 text-center py-10">Erreur : {err}</p>;
+  if (images.length === 0) return <p className="text-white text-center py-10">Aucune image publiée pour l’instant.</p>;
 
   return (
     <div className="px-6 py-10 text-white">
@@ -134,11 +121,13 @@ export default function RapportPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {images.map((img) => (
           <figure key={img.name} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-            <img
+            <Image
               src={img.url}
               alt={img.name}
+              width={1200}
+              height={800}
               className="w-full h-auto object-contain"
-              loading="lazy"
+              unoptimized
             />
             <figcaption className="p-3 text-sm text-zinc-400">
               {img.name}

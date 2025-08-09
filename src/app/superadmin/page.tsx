@@ -1,7 +1,7 @@
 // src/app/superadmin/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, AlertTriangle, BarChart3 } from "lucide-react";
 
@@ -30,19 +30,20 @@ const cards = [
 ];
 
 export default function SuperAdminPage() {
-  const [prenom, setPrenom] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("insightx_user");
-    if (!storedUser) return router.push("/connexion");
-
+    if (!storedUser) {
+      router.push("/connexion");
+      return;
+    }
     const userData = JSON.parse(storedUser);
-    if (!userData || userData.niveau_acces !== "superadmin")
-      return router.push("/connexion");
-
-    setPrenom(userData.prenom);
-  }, []);
+    if (!userData || userData.niveau_acces !== "superadmin") {
+      router.push("/connexion");
+      return;
+    }
+  }, [router]); // ✅ Ajout de router ici
 
   return (
     <div className="min-h-screen bg-black text-white p-8">

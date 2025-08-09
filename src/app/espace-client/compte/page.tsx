@@ -89,7 +89,7 @@ export default function ComptePage() {
         <p><strong>Email :</strong> {donnees.email}</p>
         <p>Date de naissance : {formatDateFR(donnees.date_naissance)}</p>
         <p><strong>Adresse :</strong> {donnees.adresse}</p>
-        <p>Date d'inscription : {formatDateTimeFR(donnees.date_inscription)}</p>
+        <p>Date d&apos;inscription : {formatDateTimeFR(donnees.date_inscription)}</p>
         <p>Prochain paiement : {formatDateFR(donnees.prochain_paiement)}</p>
 
         <div className="flex gap-4 mt-4">
