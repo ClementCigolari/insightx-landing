@@ -9,6 +9,10 @@ export default function Footer() {
         &copy; {new Date().getFullYear()} Insight-X. Tous droits réservés. |{" "}
         <Link href="/mentions-legales" className="underline hover:text-white">
           Mentions légales
+        </Link>{" "}
+        |{" "}
+        <Link href="/cgv" className="underline hover:text-white">
+          Conditions Générales de Vente
         </Link>
       </p>
     </footer>

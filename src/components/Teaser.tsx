@@ -3,7 +3,7 @@
 export default function Teaser() {
   return (
     <section className="text-center mb-24">
-      <h2 className="text-3xl font-bold mb-4">🚀 Insight-X arrive</h2>
+      <h2 className="text-3xl font-bold mb-4">🚀 Insight-X est là !!</h2>
       <p className="text-gray-300 max-w-2xl mx-auto mb-6">
         Une plateforme pensée pour lire chaque match autrement. Découvrez une approche unique basée sur :
       </p>
@@ -13,7 +13,7 @@ export default function Teaser() {
         <li>🗓️ Une planification des matchs clé en main</li>
       </ul>
       <p className="text-gray-400">
-        🎯 Lancement prévu : saison 2026/2027
+        🎯 Nous sommes là ! Rejoins Insight-X et change ta façon de vivre le foot.
       </p>
     </section>
   );

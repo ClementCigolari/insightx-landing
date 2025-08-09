@@ -46,12 +46,8 @@ export default function Competitions() {
       <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
         <h3 className="text-2xl font-semibold mb-4">Les autres championnats et coupes :</h3>
         <p className="text-gray-300 mb-4">
-          🇳🇱 Eredivisie, 🇵🇹 Liga Portugal, 🇧🇪 Pro League, 🇷🇺 Premier League,
-          🇵🇱 Ekstraklasa, 🇩🇰 Superliga, 🇭🇷 1. HNL, 🇳🇴 Eliteserien, 🇸🇪 Allsvenskan,
-          🇨🇭 Super League, 🇹🇷 Super Lig, 🇺🇦 Premier League, 🏴 Premiership (Écosse).
-          <br />
-          🏆 FA Cup, Carabao Cup, Coppa Italia, Copa Del Rey, Championship, Serie B,
-          La Liga 2… et bien plus encore.
+          🇳🇱 Eredivisie, 🇵🇹 Liga Portugal, 🇧🇪 Pro League,
+          Et bientôt d'autre c'est entre vos mains.
         </p>
       </div>
     </section>

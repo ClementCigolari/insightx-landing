@@ -14,15 +14,16 @@ export default function Formules() {
           <h3 className="text-xl font-bold mb-2">✅ Formule Découverte</h3>
           <p className="text-2xl font-semibold mb-4">4,99 €/mois</p>
           <p className="mb-4">
-            🔓 Un seul championnat parmi les 5 grands (Ligue 1, Premier League, Bundesliga, Serie A, Liga).
-            <br />👉 1 à 2 analyses par journée.
+            ⚽️ Accès à 1 championnat au choix parmi les 5 grands (Ligue 1, Premier League, Bundesliga, Serie A, Liga).
+            <br />📊 1 analyse immersive pour chaque jour de match principal (Vendredi, Samedi et Dimanche).
+            <br />⚡️ Accès au match Fil Rouge uniquement si celui-ci est dans le championnat choisi.
           </p>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded-full font-semibold cursor-not-allowed"
-            disabled
+          <a
+            href="/abonnement/decouverte"
+            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
           >
-            Bientôt disponible
-          </button>
+            Choisir cette formule
+          </a>
         </div>
 
         {/* Formule Passion */}
@@ -30,16 +31,17 @@ export default function Formules() {
           <h3 className="text-xl font-bold mb-2">✅ Formule Passion</h3>
           <p className="text-2xl font-semibold mb-4">9,99 €/mois</p>
           <p className="mb-4">
-            🔓 Un seul championnat au choix parmi tous les championnats Insight-X.
-            <br />👉 Analyses complètes pour chaque match.
-            <br />👉 Option Europe (+5 €/mois).
+            ⚽️ Accès à 1 championnat au choix parmi tous les championnats Insight-X.
+            <br />📊 Analyses complètes pour chaque match de la journée.
+            <br />⚡️ Accès au match Fil Rouge uniquement si celui-ci est dans le championnat choisi.
+            <br />🌍 Option Europe (+5 €/mois).
           </p>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded-full font-semibold cursor-not-allowed"
-            disabled
+          <a
+            href="/abonnement/passion"
+            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
           >
-            Bientôt disponible
-          </button>
+            Choisir cette formule
+          </a>
         </div>
 
         {/* Formule Premium */}
@@ -47,17 +49,18 @@ export default function Formules() {
           <h3 className="text-xl font-bold mb-2">✅ Formule Premium</h3>
           <p className="text-2xl font-semibold mb-4">19,99 €/mois</p>
           <p className="mb-4">
-            🔓 Accès aux 5 grands championnats.
-            <br />👉 Toutes les analyses Insight-X.
-            <br />👉 Option Europe (+5 €/mois).
-            <br />👉 Autre championnat = Formule Passion (9,99 €/mois).
+            ⚽️ Accès aux 5 grands championnats.
+            <br />📊 Toutes les analyses Insight-X pour chaque match.
+            <br />⚡️ Accès complet au match Fil Rouge chaque journée.
+            <br />🌍 Option Europe (+5 €/mois).
+            <br />🏆 Ajoutez un championnat secondaire pour 5€/mois.
           </p>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded-full font-semibold cursor-not-allowed"
-            disabled
+          <a
+            href="/abonnement/premium"
+            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
           >
-            Bientôt disponible
-          </button>
+            Choisir cette formule
+          </a>
         </div>
 
         {/* Formule Ultra */}
@@ -65,16 +68,17 @@ export default function Formules() {
           <h3 className="text-xl font-bold mb-2">✅ Formule Ultra</h3>
           <p className="text-2xl font-semibold mb-4">49,99 €/mois</p>
           <p className="mb-4">
-            🔓 Accès aux 5 grands championnats + Europe inclus.
-            <br />🔓 Lives Insight-X, matchs Fil Rouge.
-            <br />🔓 Dashboard personnalisé (bientôt).
+          ⚽️ Accès aux 5 grands championnats européens (Ligue 1, Premier League, Bundesliga, Liga, Serie A) + Coupes d’Europe (Ligue des Champions, Europa League, Conférence)
+            <br />🏆 Compétitions internationales incluses : Coupe du Monde, Euro, CAN, Copa América, Ligue des Nations, Coupe du Monde des Clubs
+            <br />⚡️ Toutes les analyses, lives Insight-X et matchs Fil Rouge chaque journée.
+            <br />🎯 Possibilité d’ajouter un championnat secondaire pour 5€/mois
           </p>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded-full font-semibold cursor-not-allowed"
-            disabled
+          <a
+            href="/abonnement/ultra"
+            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
           >
-            Bientôt disponible
-          </button>
+            Choisir cette formule
+          </a>
         </div>
 
         {/* Formule Ultra Premium */}
@@ -82,20 +86,17 @@ export default function Formules() {
           <h3 className="text-xl font-bold mb-2">✅ Formule Ultra Premium</h3>
           <p className="text-2xl font-semibold mb-4">199,99 €/mois</p>
           <p className="mb-4">
-            🔓 Tous les championnats Insight-X.
-            <br />🔓 Toutes les analyses, lives et matchs Fil Rouge.
-            <br />🔓 Dashboard personnalisé (bientôt).
+          🔥 La formule ultime : toutes les offres Insight-X réunies en une seule.
+            <br />⚡️ Accès intégral à toutes les analyses, lives et matchs Fil Rouge
+            <br />📊 Dashboard personnalisé exclusif
+            <br />🔐 Offre limitée, réservée aux plus passionnés. Sélection sur candidature.
           </p>
-          <p className="italic mb-4">
-            👉 Offre exceptionnelle réservée aux plus passionnés. Service limité
-            pour garantir la qualité.
-          </p>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded-full font-semibold cursor-not-allowed"
-            disabled
+          <a
+            href="/abonnement/ultrapremium"
+            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
           >
-            Bientôt disponible
-          </button>
+            Choisir cette formule
+          </a>
         </div>
 
       </div>

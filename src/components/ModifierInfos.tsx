@@ -1,0 +1,79 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function ModifierInfos({ user }: { user: any }) {
+  const router = useRouter();
+  const [email, setEmail] = useState(user.email || "");
+  const [adresse, setAdresse] = useState(user.adresse || "");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const ancienEmail = user.email;
+    const payload: any = { ancienEmail };
+
+    if (email && email !== ancienEmail) payload.nouvelEmail = email;
+    if (adresse) payload.nouvelleAdresse = adresse;
+
+    const res = await fetch("/api/modifier-utilisateur", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setMessage("Informations mises à jour. Redirection en cours...");
+      localStorage.removeItem("insightx_user");
+      setTimeout(() => {
+        router.push("/connexion");
+      }, 2000);
+    } else {
+      setMessage(data.message || "Erreur lors de la mise à jour.");
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-6">
+      <div>
+        <label className="block text-sm mb-1">Nouvel email</label>
+        <input
+          type="email"
+          value={email}
+          required
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 rounded border border-gray-300"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1">Nouvelle adresse</label>
+        <input
+          type="text"
+          value={adresse}
+          onChange={(e) => setAdresse(e.target.value)}
+          className="w-full px-4 py-2 rounded border border-gray-300"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+      >
+        {loading ? "Mise à jour..." : "Valider les modifications"}
+      </button>
+
+      {message && <p className="text-sm mt-2 text-center">{message}</p>}
+    </form>
+  );
+}
