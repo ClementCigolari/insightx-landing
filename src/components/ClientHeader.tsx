@@ -14,7 +14,7 @@ export default function ClientHeader() {
       setIsConnected(!!user);
     };
 
-    checkConnection(); // À l'initialisation
+    checkConnection();
 
     const handleStorageChange = () => checkConnection();
     window.addEventListener("storage", handleStorageChange);
@@ -22,7 +22,6 @@ export default function ClientHeader() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // 🌀 En bonus : vérification régulière dans cette même tab
   useEffect(() => {
     const interval = setInterval(() => {
       const user = localStorage.getItem("insightx_user");
@@ -34,15 +33,15 @@ export default function ClientHeader() {
   const handleLogout = () => {
     localStorage.removeItem("insightx_user");
     setIsConnected(false);
-    router.push("/"); // ou router.refresh() si tu veux juste recharger la page
+    router.push("/");
   };
 
   return (
-    <div className="w-full flex justify-end items-center px-6 py-4">
+    <div className="w-full flex justify-end items-center px-6 py-4 bg-white dark:bg-neutral-900">
       {isConnected ? (
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-medium text-white transition hover:bg-white hover:text-black"
+          className="flex items-center gap-2 rounded-full border border-black px-4 py-1.5 text-sm font-medium text-black transition hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +62,7 @@ export default function ClientHeader() {
       ) : (
         <Link
           href="/connexion"
-          className="flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-medium text-white transition hover:bg-white hover:text-black"
+          className="flex items-center gap-2 rounded-full border border-black px-4 py-1.5 text-sm font-medium text-black transition hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
