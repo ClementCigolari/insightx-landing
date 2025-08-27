@@ -41,7 +41,16 @@ export default function Sidebar() {
     userFormule.toLowerCase() === "ultra";
 
   return (
-    <aside className="min-h-screen w-64 px-4 py-6 bg-[#0b0e1a] border border-blue-700 shadow-xl rounded-tr-2xl rounded-br-2xl flex flex-col gap-6">
+    <aside
+      className="
+        hidden md:flex            /* 👈 cachée en mobile, affichée dès md */
+        h-screen sticky top-0     /* hauteur pleine + collée en haut */
+        w-64 px-4 py-6
+        bg-[#0b0e1a] border border-blue-700
+        shadow-xl rounded-tr-2xl rounded-br-2xl
+        flex-col gap-6
+      "
+    >
       {/* LOGO EN HAUT */}
       <div className="flex justify-center items-center px-2 mb-4 transition-transform duration-300 hover:scale-105">
         <Image
