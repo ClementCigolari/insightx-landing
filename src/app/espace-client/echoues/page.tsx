@@ -40,7 +40,7 @@ export default function MatchsEchouesPage() {
 
         if (error) throw error;
         if (!cancelled) setItems(data ?? []);
-      } catch (e) {
+      } catch (_err) {
         if (!cancelled) setErr("Impossible de charger les comptes-rendus.");
       } finally {
         if (!cancelled) setLoading(false);

@@ -117,9 +117,10 @@ export default function RapportPage() {
       });
 
       setImages(valid);
-    } catch (e: any) {
-      console.error(e);
-      setErr(e?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue";
+      console.error(err);
+      setErr(message);
     } finally {
       setLoading(false);
     }
