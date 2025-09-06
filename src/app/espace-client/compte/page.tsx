@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatDateFR, formatDateTimeFR } from "@/lib/dateUtils";
-import { Mail, CalendarDays, User2, MapPin, CreditCard, Shield, Loader2, PauseCircle } from "lucide-react";
+import { Mail, CalendarDays, User2, MapPin, CreditCard, Shield, PauseCircle } from "lucide-react";
 
 type DonneesCompte = {
   nom: string;
@@ -36,7 +36,7 @@ export default function ComptePage() {
         if (!data?.success) throw new Error("Réponse invalide.");
 
         setDonnees(data.data as DonneesCompte);
-      } catch (e) {
+      } catch {
         setErr("Impossible de charger votre compte.");
       } finally {
         setLoading(false);

@@ -11,7 +11,7 @@ export default function Page() {
       {/* Page réutilisable qui liste les analyses */}
       <LeagueAnalysesPage
         slug="coppa-italia"
-        title="Coupe D'Italie — Analyses"
+        title="Coupe D&apos;Italie — Analyses"
       />
     </div>
   );

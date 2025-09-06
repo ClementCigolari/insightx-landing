@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ModifierInfos from "@/components/ModifierInfos";
-import { Shield, Loader2 } from "lucide-react";
+import { Shield, } from "lucide-react";
 
 type UserLite = {
   email?: string;

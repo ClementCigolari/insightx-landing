@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect,  useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trophy, ArrowRight } from "lucide-react";
@@ -12,10 +12,6 @@ type InsightUser = {
   ligue?: string | string[]; // parfois un code, parfois un nom => on gère les deux
   options?: string[];    // ex: ["europe","FR-CDF","NL-ERE"]
 };
-
-function cn(...cls: Array<string | false | null | undefined>) {
-  return cls.filter(Boolean).join(" ");
-}
 
 const GRANDS_CODES = ["FR-L1", "UK-PL", "DE-BUN", "IT-A", "ES-L1"];
 
