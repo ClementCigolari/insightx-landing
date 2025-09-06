@@ -1,40 +1,67 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useRecapitulatif } from "@/hooks/useRecapitulatif";
 
+type League = { id: string; name: string };
+type Group = { country: string; leagues: League[] };
+
+const LEAGUES: Group[] = [
+  { country: "France 🇫🇷", leagues: [{ id: "FR-L1", name: "Ligue 1" }, { id: "FR-CDF", name: "Coupe de France" }] },
+  { country: "Angleterre 🇬🇧", leagues: [{ id: "UK-PL", name: "Premier League" }, { id: "UK-FAC", name: "FA Cup" }] },
+  { country: "Espagne 🇪🇸", leagues: [{ id: "ES-L1", name: "La Liga" }, { id: "ES-CDR", name: "Copa del Rey" }] },
+  { country: "Italie 🇮🇹", leagues: [{ id: "IT-A", name: "Serie A" }, { id: "IT-CI", name: "Coppa Italia" }] },
+  { country: "Allemagne 🇩🇪", leagues: [{ id: "DE-BUN", name: "Bundesliga" }] },
+  { country: "Pays-Bas 🇳🇱", leagues: [{ id: "NL-ERE", name: "Eredivisie" }] },
+  { country: "Portugal 🇵🇹", leagues: [{ id: "PT-LP", name: "Liga Portugal" }] },
+  { country: "Belgique 🇧🇪", leagues: [{ id: "BE-PL", name: "Pro League" }] },
+];
+
 export default function FormulePassion() {
+  const router = useRouter();
+  const { setRecapitulatif } = useRecapitulatif();
+
   const [selectedLeague, setSelectedLeague] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
   const [optionEurope, setOptionEurope] = useState(false);
-  const { setRecapitulatif } = useRecapitulatif();
-  const router = useRouter();
 
-  const handleSelectPlan = (plan: string) => {
-    setSelectedPlan(plan);
+  const selectedLeagueName = useMemo(() => {
+    const all = LEAGUES.flatMap(g => g.leagues);
+    return all.find(l => l.id === selectedLeague)?.name ?? "";
+  }, [selectedLeague]);
+
+  const handleSelectPlan = (plan: string) => setSelectedPlan(plan);
+
+  const getPriceText = (includeEurope: boolean) => {
+    if (selectedPlan === "Sans engagement") {
+      const base = 9.99;
+      const total = includeEurope ? base + 5 : base;
+      const desc = includeEurope ? "formule Passion + Europe" : "formule Passion";
+      return `${total.toFixed(2)}€ / mois (${desc})`;
+    }
+    return "";
   };
 
   const handleUpdateSubscription = async () => {
     const user = JSON.parse(localStorage.getItem("insightx_user") || "{}");
-
     const options = optionEurope ? ["europe"] : [];
 
     const recapData = {
       email: user.email,
       formule: "passion",
       plan: selectedPlan,
-      league: selectedLeague,
-      options: options,
+      league: selectedLeague, // code (ex: FR-L1)
+      options,
       prix: getPriceText(optionEurope),
     };
 
-    // On met à jour le localStorage aussi côté user
     const updatedUser = {
       ...user,
       formule: "passion",
       plan: selectedPlan,
-      league: selectedLeague,
-      options: options,
+      ligue: selectedLeague, // harmonisé avec le reste de l’app
+      options,
     };
 
     localStorage.setItem("insightx_user", JSON.stringify(updatedUser));
@@ -48,14 +75,12 @@ export default function FormulePassion() {
     });
 
     if (response.ok) {
-      const confirmed = window.confirm("Votre demande de changement de formule a bien été envoyée à l’équipe Insight-X.\n\nElle prendra effet à la date de renouvellement de votre abonnement mensuel.\n\nVous allez maintenant être déconnecté(e).");
-    
+      const confirmed = window.confirm(
+        "Votre demande de changement de formule a bien été envoyée à l’équipe Insight-X.\n\nElle prendra effet à la date de renouvellement de votre abonnement mensuel.\n\nVous allez maintenant être déconnecté(e)."
+      );
       if (confirmed) {
-        // 🔐 Déconnexion propre
         localStorage.removeItem("insightx_user");
         localStorage.removeItem("insightx_recap");
-        
-        // 🔁 Redirection vers la page de connexion
         router.push("/connexion");
       }
     } else {
@@ -63,142 +88,148 @@ export default function FormulePassion() {
     }
   };
 
-  const getPriceText = (includeEurope: boolean) => {
-    if (selectedPlan === "Sans engagement") {
-      const base = 9.99;
-      const total = includeEurope ? base + 5 : base;
-      const desc = includeEurope ? "formule Passion + Europe" : "formule Passion";
-      return `${total.toFixed(2)}€ / mois (${desc})`;
-    }
-    return "";
-  };
-
-  const leaguesList = [
-    { country: "France 🇫🇷", leagues: [{ id: "FR-L1", name: "Ligue 1" }, { id: "FR-CDF", name: "Coupe de France" }] },
-    { country: "Angleterre 🇬🇧", leagues: [
-      { id: "UK-PL", name: "Premier League" },
-      { id: "UK-FAC", name: "FA Cup" },
-    ]},
-    { country: "Espagne 🇪🇸", leagues: [
-      { id: "ES-L1", name: "La Liga" },
-      { id: "ES-CDR", name: "Copa del Rey" }
-    ]},
-    { country: "Italie 🇮🇹", leagues: [
-      { id: "IT-A", name: "Serie A" },
-      { id: "IT-CI", name: "Coppa Italia" }
-    ]},
-    { country: "Allemagne 🇩🇪", leagues: [{ id: "DE-BUN", name: "Bundesliga" }] },
-    { country: "Pays-Bas 🇳🇱", leagues: [{ id: "NL-ERE", name: "Eredivisie" }] },
-    { country: "Portugal 🇵🇹", leagues: [{ id: "PT-LP", name: "Liga Portugal" }] },
-    { country: "Belgique 🇧🇪", leagues: [{ id: "BE-PL", name: "Pro League" }] },
-  ];
-
   return (
-    <section className="py-20 px-6 sm:px-10 bg-black text-white min-h-screen">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-center">
-          Formule Passion : Vivez chaque match de votre championnat comme un insider
+    <section className="relative px-6 py-10 text-white min-h-screen">
+      {/* halo top */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-4 h-16 bg-gradient-to-b from-emerald-400/10 via-white/10 to-transparent blur-2xl"
+      />
+
+      {/* Header */}
+      <header className="mb-8">
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-wide">
+          ❤️ Formule
+        </div>
+        <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold">
+          Passion — Vis les matchs comme un insider
         </h1>
-
-        <p className="text-lg sm:text-xl text-gray-300 mb-8 text-center max-w-3xl mx-auto">
-          Avec Insight-X, accédez à un championnat au choix et vivez chaque match à fond grâce à nos analyses immersives, nos scénarios stratégiques et nos contenus exclusifs conçus pour les vrais passionnés.
+        <p className="mt-3 text-white/70 max-w-3xl">
+          Choisis ton championnat principal, active l’option Europe si tu veux vibrer les soirs de C1/C3/C4, et profite des analyses immersives & du Fil Rouge quand il concerne ta ligue.
         </p>
+        <div
+          aria-hidden
+          className="mt-4 h-10 w-full rounded-full bg-gradient-to-r from-emerald-400/10 via-white/5 to-emerald-400/10 blur-xl"
+        />
+      </header>
 
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-10">
-          <h2 className="text-2xl font-semibold mb-4">Ce que vous obtenez :</h2>
-          <ul className="list-disc pl-6 space-y-3">
-            <li>🎯 Accès à 1 championnat au choix parmi tous les championnats disponibles sur Insight-X.</li>
-            <li>📊 Analyses complètes pour chaque match de votre championnat : immersion, stratégie, stats clés et décryptage minute par minute.</li>
-            <li>🔥 Accès au Match Fil Rouge, uniquement si celui-ci concerne votre championnat sélectionné.</li>
-            <li>🌍 Option Europe disponible : ajoutez la Ligue des Champions et la Ligue Europa pour 5€/mois en plus.</li>
+      <div className="mx-auto max-w-4xl space-y-8">
+        {/* Ce que tu obtiens */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-[0_8px_24px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-bold">Ce que tu obtiens</h2>
+          <div aria-hidden className="my-4 h-px w-full bg-gradient-to-r from-emerald-400/25 to-emerald-400/0" />
+          <ul className="grid sm:grid-cols-2 gap-3 text-white/85 text-sm">
+            <li>🎯 1 championnat au choix parmi tous les championnats Insight-X</li>
+            <li>📊 Analyses complètes pour chaque match de ta ligue</li>
+            <li>⚡️ Fil Rouge inclus s’il concerne ton championnat</li>
+            <li>🌍 Option Europe (+5€/mois) : C1, C3, C4</li>
           </ul>
         </div>
 
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-10">
-          <h2 className="text-2xl font-semibold mb-4 text-center">
-            Choisissez votre championnat principal
-          </h2>
-          <p className="text-gray-300 text-center mb-6">
-            Ce championnat sera inclus dans votre abonnement de base à <strong>9,99€/mois</strong>.
+        {/* Choix du championnat principal */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-[0_8px_24px_rgba(0,0,0,.35)]">
+          <h3 className="text-lg font-semibold text-white">Choisis ton championnat principal</h3>
+          <p className="mt-1 text-white/70 text-sm">
+            Inclus dans l’abonnement de base à <strong>9,99 €/mois</strong>.
           </p>
+          <div aria-hidden className="my-4 h-px w-full bg-gradient-to-r from-blue-400/25 to-blue-400/0" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-  {leaguesList.map((item, index) => (
-    <div key={index} className="border border-white/20 rounded-lg p-4">
-      <h3 className="text-lg font-semibold mb-2">{item.country}</h3>
-      <ul className="text-sm text-gray-300 space-y-1">
-        {item.leagues.map((league) => (
-          <li key={league.id} className="flex items-center justify-between">
-            {league.name}
-            <input
-              type="checkbox"
-              checked={selectedLeague === league.id}
-              onChange={() =>
-                setSelectedLeague((prev) => (prev === league.id ? "" : league.id))
-              }
-              className="form-checkbox h-5 w-5 text-blue-500"
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
-  ))}
-</div>
+            {LEAGUES.map((group, i) => (
+              <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <h4 className="text-base font-semibold mb-2">{group.country}</h4>
+                <ul className="space-y-2 text-sm text-white/85">
+                  {group.leagues.map((league) => {
+                    const active = selectedLeague === league.id;
+                    return (
+                      <li key={league.id} className="flex items-center justify-between">
+                        <span>{league.name}</span>
+                        <button
+                          onClick={() =>
+                            setSelectedLeague((prev) => (prev === league.id ? "" : league.id))
+                          }
+                          className={[
+                            "rounded-full px-3 py-1 text-xs font-semibold border transition",
+                            active
+                              ? "bg-white text-black border-white"
+                              : "bg-white/5 text-white border-white/15 hover:bg-white/10",
+                          ].join(" ")}
+                        >
+                          {active ? "Choisi ✓" : "Choisir"}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-{selectedLeague && (
-  <p className="mt-6 text-center text-green-400">
-    ✅ Vous avez sélectionné :{" "}
-    <strong>
-      {
-        leaguesList
-          .flatMap((group) => group.leagues)
-          .find((l) => l.id === selectedLeague)?.name
-      }
-    </strong>
-  </p>
-)}
+          {selectedLeague && (
+            <p className="mt-4 text-emerald-300 text-sm">
+              ✅ Sélection : <span className="font-semibold">{selectedLeagueName}</span>
+            </p>
+          )}
         </div>
 
+        {/* Plan + Option Europe */}
         {selectedLeague && (
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              Choisissez votre formule d’abonnement
+          <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-[0_8px_24px_rgba(0,0,0,.35)]">
+            <h3 className="text-lg font-semibold text-white text-center">
+              Choisis ta formule d’abonnement
             </h3>
-            <div className="flex flex-col gap-4">
-              {[
-                { label: "Sans engagement", title: "🔁 Mensuel sans engagement", description: "9,99€ / mois. Paiement récurrent. Vous pouvez annuler à tout moment." },
-              ].map((plan) => (
-                <div key={plan.label} className={`p-4 rounded-lg border ${selectedPlan === plan.label ? "bg-white text-black border-white" : "bg-gray-900 border-white"}`}>
-                  <h4 className="text-lg font-bold">{plan.title}</h4>
-                  <p className={`mb-2 ${selectedPlan === plan.label ? "text-black" : "text-gray-300"}`}>{plan.description}</p>
-                  <button
-                    onClick={() => handleSelectPlan(plan.label)}
-                    className={`px-4 py-2 rounded-full font-semibold w-full ${selectedPlan === plan.label ? "bg-black text-white" : "bg-white text-black hover:bg-gray-200"}`}
-                  >
-                    Choisir cette formule
-                  </button>
-                </div>
-              ))}
+            <div aria-hidden className="mx-auto my-4 h-px w-full bg-gradient-to-r from-violet-400/30 to-violet-400/0" />
+
+            {/* Carte plan */}
+            <div
+              className={[
+                "relative rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-7",
+                selectedPlan === "Sans engagement" ? "ring-2 ring-emerald-400/30" : "",
+              ].join(" ")}
+            >
+              <div className="absolute -top-3 right-4 rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-black">
+                Recommandé
+              </div>
+
+              <div className="mb-3">
+                <h4 className="text-xl font-bold">Mensuel sans engagement</h4>
+                <div className="mt-1 text-3xl font-extrabold">9,99 € / mois</div>
+                <p className="mt-2 text-white/70 text-sm">
+                  Paiement récurrent. Annulable à tout moment.
+                </p>
+              </div>
+
+              <div aria-hidden className="my-4 h-px w-full bg-gradient-to-r from-emerald-400/25 to-emerald-400/0" />
+
+              <button
+                onClick={() => handleSelectPlan("Sans engagement")}
+                className={[
+                  "mt-2 inline-flex w-full items-center justify-center rounded-xl px-5 py-3 font-semibold transition",
+                  selectedPlan === "Sans engagement"
+                    ? "bg-emerald-400 text-black hover:opacity-90"
+                    : "bg-white text-black hover:opacity-90",
+                ].join(" ")}
+              >
+                {selectedPlan === "Sans engagement" ? "Sélectionné ✓" : "Choisir cette formule"}
+              </button>
             </div>
 
+            {/* Option Europe */}
             {selectedPlan && (
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-                <h3 className="text-xl font-semibold mb-2 text-center text-white">🌍 Envie de vibrer aussi les soirs d’Europe ?</h3>
-                <p className="text-gray-300 text-center mb-4">
-                  Pour seulement <strong>5€/mois</strong> de plus, ajoutez les soirées <span className="text-white">Ligue des Champions</span>, <span className="text-white">Europa League</span> et <span className="text-white">Conference League</span> à votre formule.<br />
-                  Une immersion totale dans le gratin du foot européen.
+              <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
+                <h5 className="font-semibold mb-2 text-center">🌍 Envie des soirées d’Europe ?</h5>
+                <p className="text-sm text-white/70 text-center">
+                  Ajoute la <span className="text-white">Ligue des Champions</span>, l’<span className="text-white">Europa League</span> et la <span className="text-white">Conference League</span> pour <strong>+5€/mois</strong>.
                 </p>
-                <div className="flex justify-center items-center">
-                  <label className="flex items-center space-x-3 cursor-pointer">
+                <div className="mt-3 flex justify-center">
+                  <label className="inline-flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={optionEurope}
-                      onChange={() => setOptionEurope(!optionEurope)}
-                      className="form-checkbox h-5 w-5 text-green-500"
+                      onChange={() => setOptionEurope((v) => !v)}
+                      className="h-4 w-4 rounded border-white/30 bg-white/10 text-emerald-400 focus:ring-emerald-400"
                     />
-                    <span className="text-white font-semibold">
-                      Oui, je veux suivre aussi les compétitions européennes (+5€/mois)
-                    </span>
+                    <span className="text-sm">Activer l’option Europe (+5€/mois)</span>
                   </label>
                 </div>
               </div>
@@ -206,24 +237,34 @@ export default function FormulePassion() {
           </div>
         )}
 
+        {/* Récap + CTA */}
         {selectedPlan && selectedLeague && (
-          <div className="bg-gray-900 p-6 rounded-lg shadow-lg mb-8 text-center">
-            <h3 className="text-xl font-semibold mb-2">✅ Récapitulatif de votre sélection</h3>
-            <p className="text-gray-300 mb-4">
-              Championnat : <strong>{selectedLeague}</strong><br />
-              Formule sélectionnée : <strong>{selectedPlan}</strong><br />
+          <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-[0_8px_24px_rgba(0,0,0,.35)]">
+            <h3 className="text-lg font-semibold text-white text-center">Récapitulatif</h3>
+            <div aria-hidden className="mx-auto my-4 h-px w-full bg-gradient-to-r from-emerald-400/25 to-emerald-400/0" />
+
+            <div className="text-center text-sm">
+              <p className="text-white/80">
+                Championnat : <span className="font-semibold text-white">{selectedLeagueName}</span>
+              </p>
+              <p className="text-white/80">
+                Formule : <span className="font-semibold text-white">{selectedPlan}</span>
+              </p>
               {optionEurope && (
-                <>
-                  Option : <span className="text-green-400 font-semibold">Europe activée (+5€/mois)</span><br />
-                </>
+                <p className="text-emerald-300">
+                  Option : <strong>Europe activée (+5€/mois)</strong>
+                </p>
               )}
-              <span className="text-green-400">Prix total : <strong>{getPriceText(optionEurope)}</strong></span>
-            </p>
+              <p className="mt-1 text-emerald-300">
+                Prix total : <strong>{getPriceText(optionEurope)}</strong>
+              </p>
+            </div>
+
             <button
-              className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition"
+              className="mt-5 w-full rounded-xl bg-emerald-400 px-5 py-3 font-semibold text-black hover:opacity-90 transition"
               onClick={handleUpdateSubscription}
             >
-              Modification de votre abonnement
+              Confirmer la modification d’abonnement →
             </button>
           </div>
         )}

@@ -6,7 +6,7 @@ import ClientHeader from "@/components/ClientHeader";
 import { RecapitulatifProvider } from "@/context/RecapitulatifContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { SupabaseProvider } from "@/context/SupabaseProvider";
-import SyncCookie from "@/components/SyncCookie"; // ✅ Ajout ici
+import SyncCookie from "@/components/SyncCookie";
 import Script from "next/script";
 
 const geistSans = Geist({
@@ -27,25 +27,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr">
+    // 👉 scroll-smooth pour ancres (#methode, #pricing, etc.)
+    <html lang="fr" className="scroll-smooth">
       <head>
         {/* Google Analytics */}
         <Script
-  src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
-  strategy="afterInteractive"
-/>
-<Script id="ga-init" strategy="afterInteractive">
-  {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-C3HPY37296');
-  `}
-</Script>
+          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-C3HPY37296');
+          `}
+        </Script>
 
         {/* Open Graph */}
         <meta property="og:title" content="Insight-X : L'analyse immersive du football" />
@@ -58,12 +57,13 @@ export default function RootLayout({
         <meta property="og:image" content="https://www.insight-x.fr/logo-insight-x.png" />
         <meta property="og:site_name" content="Insight-X" />
       </head>
+
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}>
         <ClientHeader />
         <CheckoutProvider>
           <RecapitulatifProvider>
             <SupabaseProvider>
-              <SyncCookie /> {/* ✅ Sécurité renforcée par cookie */}
+              <SyncCookie />
               {children}
             </SupabaseProvider>
           </RecapitulatifProvider>

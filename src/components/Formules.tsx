@@ -1,104 +1,176 @@
 "use client";
 
+import Link from "next/link";
+
+// util facultative; si tu n'en as pas, remplace cn(...) par des concat de classes
+function cn(...cls: Array<string | false | undefined>) {
+  return cls.filter(Boolean).join(" ");
+}
+
+type Plan = {
+  slug: string;
+  name: string;
+  price: string;
+  tagline: string;
+  features: string[];
+  badge?: "popular" | "starter" | "pro";
+  accent: string; // gradient/ombre
+  cta: string;
+};
+
+const PLANS: Plan[] = [
+  {
+    slug: "decouverte",
+    name: "Découverte",
+    price: "4,99 €/mois",
+    tagline: "Teste Insight-X sur un championnat.",
+    features: [
+      "1 championnat au choix parmi les 5 grands",
+      "1 analyse immersive / jour clé (ven/sam/dim)",
+      "Fil Rouge si dans le championnat choisi",
+    ],
+    badge: "starter",
+    accent:
+      "from-emerald-400/25 to-emerald-400/0 shadow-[0_8px_30px_rgba(16,185,129,.25)]",
+    cta: "Commencer l’essai",
+  },
+  {
+    slug: "passion",
+    name: "Passion",
+    price: "9,99 €/mois",
+    tagline: "Toutes les analyses sur TON championnat.",
+    features: [
+      "1 championnat au choix (tous les championnats Insight-X)",
+      "Analyses complètes pour chaque match",
+      "Fil Rouge inclus si concerné",
+      "Option Europe (+5 €/mois)",
+    ],
+    accent:
+      "from-blue-400/25 to-blue-400/0 shadow-[0_8px_30px_rgba(59,130,246,.25)]",
+    cta: "Choisir Passion",
+  },
+  {
+    slug: "premium",
+    name: "Premium",
+    price: "19,99 €/mois",
+    tagline: "Le pack complet pour ne rien rater.",
+    features: [
+      "Accès aux 5 grands championnats",
+      "Toutes les analyses Insight-X pour chaque match",
+      "Fil Rouge chaque journée",
+      "Option Europe (+5 €/mois) • +1 championnat secondaire (+5 €/mois)",
+    ],
+    badge: "popular",
+    accent:
+      "from-violet-400/30 to-violet-400/0 shadow-[0_12px_40px_rgba(139,92,246,.35)]",
+    cta: "Choisir Premium",
+  },
+  {
+    slug: "ultra",
+    name: "Ultra",
+    price: "49,99 €/mois",
+    tagline: "Europe + Internationaux + lives & Fil Rouge.",
+    features: [
+      "5 grands championnats + Coupes d’Europe",
+      "Compétitions internationales (Euro, CDM, CAN, etc.)",
+      "Toutes les analyses, lives Insight-X & Fil Rouge chaque journée",
+      "+1 championnat secondaire (+5 €/mois)",
+    ],
+    badge: "pro",
+    accent:
+      "from-amber-400/25 to-amber-400/0 shadow-[0_12px_40px_rgba(245,158,11,.30)]",
+    cta: "Choisir Ultra",
+  },
+];
+
 export default function Formules() {
   return (
-    <section id="pricing" className="py-20 px-6 sm:px-10 bg-black text-white">
-      <h2 className="text-4xl font-bold mb-10 text-center">
-        Choisissez votre formule Insight-X
+    <section id="pricing" className="relative py-24 px-6 sm:px-10 bg-black text-white">
+      {/* halo doux derrière le titre */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-white/5 to-transparent"
+      />
+      <h2 className="text-center text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
+        Choisis ton terrain de jeu
       </h2>
+      <p className="text-center text-white/70 max-w-2xl mx-auto mb-12">
+        Paiement sécurisé via Stripe • Sans engagement • Annulable à tout moment
+      </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        {PLANS.map((p) => {
+          const isPopular = p.badge === "popular";
+          const isStarter = p.badge === "starter";
+          const isPro = p.badge === "pro";
 
-        {/* Formule Découverte */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2">✅ Formule Découverte</h3>
-          <p className="text-2xl font-semibold mb-4">4,99 €/mois</p>
-          <p className="mb-4">
-            ⚽️ Accès à 1 championnat au choix parmi les 5 grands (Ligue 1, Premier League, Bundesliga, Serie A, Liga).
-            <br />📊 1 analyse immersive pour chaque jour de match principal (Vendredi, Samedi et Dimanche).
-            <br />⚡️ Accès au match Fil Rouge uniquement si celui-ci est dans le championnat choisi.
-          </p>
-          <a
-            href="/abonnement/decouverte"
-            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
-          >
-            Choisir cette formule
-          </a>
-        </div>
+          return (
+            <div
+              key={p.slug}
+              className={cn(
+                "relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm",
+                "p-6 sm:p-8 flex flex-col shadow-[0_8px_24px_rgba(0,0,0,.35)]",
+                isPopular && "ring-2 ring-violet-400/30"
+              )}
+            >
+              {/* Rubans */}
+              {isPopular && (
+                <div className="absolute -top-3 right-4 rounded-full bg-violet-500 px-3 py-1 text-xs font-bold text-black">
+                  Recommandé
+                </div>
+              )}
+              {isStarter && (
+                <div className="absolute -top-3 right-4 rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-black">
+                  Essai facile
+                </div>
+              )}
+              {isPro && (
+                <div className="absolute -top-3 right-4 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-black">
+                  Puissance
+                </div>
+              )}
 
-        {/* Formule Passion */}
-        <div className="bg-yellow-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2">✅ Formule Passion</h3>
-          <p className="text-2xl font-semibold mb-4">9,99 €/mois</p>
-          <p className="mb-4">
-            ⚽️ Accès à 1 championnat au choix parmi tous les championnats Insight-X.
-            <br />📊 Analyses complètes pour chaque match de la journée.
-            <br />⚡️ Accès au match Fil Rouge uniquement si celui-ci est dans le championnat choisi.
-            <br />🌍 Option Europe (+5 €/mois).
-          </p>
-          <a
-            href="/abonnement/passion"
-            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
-          >
-            Choisir cette formule
-          </a>
-        </div>
+              {/* Titre + prix */}
+              <div className="mb-4">
+                <h3 className="text-xl font-bold">{p.name}</h3>
+                <div className="mt-1 text-3xl font-extrabold">{p.price}</div>
+                <p className="mt-2 text-white/70">{p.tagline}</p>
+              </div>
 
-        {/* Formule Premium */}
-        <div className="bg-blue-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2">✅ Formule Premium</h3>
-          <p className="text-2xl font-semibold mb-4">19,99 €/mois</p>
-          <p className="mb-4">
-            ⚽️ Accès aux 5 grands championnats.
-            <br />📊 Toutes les analyses Insight-X pour chaque match.
-            <br />⚡️ Accès complet au match Fil Rouge chaque journée.
-            <br />🌍 Option Europe (+5 €/mois).
-            <br />🏆 Ajoutez un championnat secondaire pour 5€/mois.
-          </p>
-          <a
-            href="/abonnement/premium"
-            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
-          >
-            Choisir cette formule
-          </a>
-        </div>
+              {/* séparateur gradient */}
+              <div aria-hidden className={cn("my-4 h-px w-full bg-gradient-to-r", p.accent)} />
 
-        {/* Formule Ultra */}
-        <div className="bg-purple-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2">✅ Formule Ultra</h3>
-          <p className="text-2xl font-semibold mb-4">49,99 €/mois</p>
-          <p className="mb-4">
-          ⚽️ Accès aux 5 grands championnats européens (Ligue 1, Premier League, Bundesliga, Liga, Serie A) + Coupes d’Europe (Ligue des Champions, Europa League, Conférence)
-            <br />🏆 Compétitions internationales incluses : Coupe du Monde, Euro, CAN, Copa América, Ligue des Nations, Coupe du Monde des Clubs
-            <br />⚡️ Toutes les analyses, lives Insight-X et matchs Fil Rouge chaque journée.
-            <br />🎯 Possibilité d’ajouter un championnat secondaire pour 5€/mois
-          </p>
-          <a
-            href="/abonnement/ultra"
-            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
-          >
-            Choisir cette formule
-          </a>
-        </div>
+              {/* Features */}
+              <ul className="space-y-2 text-sm text-white/85 flex-1">
+                {p.features.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-white/60" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
 
-        {/* Formule Ultra Premium */}
-        <div className="bg-red-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2">✅ Formule Ultra Premium</h3>
-          <p className="text-2xl font-semibold mb-4">199,99 €/mois</p>
-          <p className="mb-4">
-          🔥 La formule ultime : toutes les offres Insight-X réunies en une seule.
-            <br />⚡️ Accès intégral à toutes les analyses, lives et matchs Fil Rouge
-            <br />📊 Dashboard personnalisé exclusif
-            <br />🔐 Offre limitée, réservée aux plus passionnés. Sélection sur candidature.
-          </p>
-          <a
-            href="/abonnement/ultrapremium"
-            className="bg-white text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition block text-center"
-          >
-            Choisir cette formule
-          </a>
-        </div>
-
+              {/* CTA — dimensions uniformes */}
+              <Link
+                href={`/abonnement/${p.slug}`}
+                className={cn(
+                  // 👇 tailles uniformes
+                  "mt-6 inline-flex h-12 w-full items-center justify-center rounded-xl px-5 font-semibold transition whitespace-nowrap",
+                  // 👇 style de base + variantes
+                  "bg-white text-black hover:opacity-90",
+                  isPopular &&
+                    "bg-violet-400 text-black hover:shadow-[0_12px_30px_rgba(139,92,246,.35)]",
+                  isStarter &&
+                    "bg-emerald-400 text-black hover:shadow-[0_12px_30px_rgba(16,185,129,.35)]",
+                  isPro &&
+                    "bg-amber-400 text-black hover:shadow-[0_12px_30px_rgba(245,158,11,.35)]"
+                )}
+              >
+                {p.cta} →
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,52 +1,104 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
-    <section className="flex flex-col items-center justify-center text-center py-20 px-6 sm:px-10">
-      <Image
-        className="mb-10"
-        src="/logo-insight-x.png"
-        alt="Insight-X Logo"
-        width={400}
-        height={400}
-        priority
+    <section className="relative overflow-hidden bg-black text-white">
+      {/* BACKGROUND: zoom progressif */}
+      <motion.div
+        aria-hidden
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 18, ease: "easeOut" }}
+        style={{ backgroundImage: "url('/hero-stade.jpg')" }}
+        className="absolute inset-0 bg-cover bg-center"
       />
+      {/* OVERLAY: gradient pour lisibilité */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
 
-      <h1 className="text-3xl sm:text-5xl font-bold mt-6">
-        Insight-X : Analyse stratégique et immersive du football européen et mondial
-      </h1>
+      {/* CONTENT */}
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-20 md:py-24">
+        <div className="mx-auto max-w-3xl text-center">
 
-      <p className="text-lg sm:text-xl text-gray-400 mt-4 max-w-xl">
-        Plongez au cœur des matchs avec Insight-X, votre allié incontournable pour des analyses 
-        détaillées, des scénarios immersifs et des statistiques exclusives. Vivez chaque compétition 
-        avec passion et expertise.
-      </p>
+          {/* Badge */}
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs tracking-wide uppercase"
+          >
+            <span className="text-green-400">71% SAFE validés</span>
+            <span className="text-white/70">— Août</span>
+          </motion.p>
 
-      <div className="mt-8 flex flex-col sm:flex-row gap-4">
-        <a
-          href="#method"
-          className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300"
-        >
-          Découvrir la méthode
-        </a>
-        <a
-          href="#team"
-          className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300"
-        >
-          Découvrir l’équipe
-        </a>
-        <a
-          href="#pricing"
-          className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300"
-        >
-          Découvrir les formules
-        </a>
-        <a
-          href="#competitions"
-          className="inline-block rounded-full border border-white px-6 py-3 text-white font-semibold hover:bg-white hover:text-black transition duration-300"
-        >
-          Découvrir les championnats
-        </a>
+          {/* Titre */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl md:text-5xl"
+          >
+            Arrête de jouer à l’aveugle 👀
+            <br />
+            <span className="text-white/90">
+              Avec Insight-X, chaque match devient lisible.
+            </span>
+          </motion.h1>
+
+          {/* Sous-texte */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-4 text-base text-white/80 sm:text-lg"
+          >
+            Données, signaux, scénarios. Une méthode claire (V7) pour faire des
+            choix de matchs <strong>sereins</strong>. Essaie dès <strong>4,99 €</strong>.
+          </motion.p>
+
+          {/* Boutons */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-8 flex items-center justify-center gap-3"
+          >
+            {/* CTA principal avec “pulse” d’attention */}
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ delay: 2, duration: 1.2, repeat: 2 }}
+              className="inline-block"
+            >
+              <Link
+               href="#pricing"
+              className="px-8 py-4 bg-green-500 text-black font-bold text-lg rounded-xl shadow-lg 
+                         animate-pulse hover:scale-110 hover:shadow-green-500/50 transition-all duration-300"
+            >
+                 Commencer dès 4,99 €
+              </Link>
+            </motion.div>
+
+            <Link
+              href="#methode"
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10"
+            >
+              Voir la méthode V7
+            </Link>
+          </motion.div>
+
+          {/* Confiance */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+            className="mt-6 text-xs text-white/60"
+          >
+            Paiement 100% sécurisé via Stripe · Sans engagement · Annulable à tout moment
+          </motion.div>
+        </div>
       </div>
     </section>
   );

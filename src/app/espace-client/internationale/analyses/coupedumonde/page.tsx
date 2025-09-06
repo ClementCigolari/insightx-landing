@@ -1,16 +1,16 @@
-import EuropeAnalysesPage from "@/components/EuropeAnalysesPage";
+import EuropeAnalysesPage from "@/components/InternationaleAnalysesPage";
 import LegendIndice from "@/components/LegendIndice";
 
 export default function Page() {
   return (
     <div className="px-6 py-10 text-white">
       {/* Titre + légende */}
-      <h1 className="text-3xl font-bold mb-4">Ligue Des Champions — Analyses</h1>
+      <h1 className="text-3xl font-bold mb-4">Coupe Du Monde (Qualification) — Analyses</h1>
       <LegendIndice className="mb-6" />
 {/* Page réutilisable qui liste les analyses */}
       <EuropeAnalysesPage
-        slug="championsleague"
-        title="Ligue Des Champions — Analyses"
+        slug="coupedumonde"
+        title="Coupe Du Monde (Qualification) — Analyses"
       />
     </div>
   );

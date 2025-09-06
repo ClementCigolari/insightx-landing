@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Trophy,
@@ -17,6 +17,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+function cn(...cls: Array<string | false | null | undefined>) {
+  return cls.filter(Boolean).join(" ");
+}
+
 export default function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -24,103 +28,218 @@ export default function MobileNav() {
   const [userOptions, setUserOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    const userDataRaw = localStorage.getItem("insightx_user");
-    if (!userDataRaw) return;
+    const raw = localStorage.getItem("insightx_user");
+    if (!raw) return;
     try {
-      const userData = JSON.parse(userDataRaw);
-      setUserFormule(userData.formule || "");
-      setUserOptions(userData.options || []);
-    } catch (error) {
-      console.error("Erreur parsing données user :", error);
+      const u = JSON.parse(raw);
+      setUserFormule((u.formule || "").toString());
+      setUserOptions(Array.isArray(u.options) ? u.options : []);
+    } catch (e) {
+      console.error("Parse insightx_user:", e);
     }
   }, []);
 
-  const shouldShowEurope =
-    userFormule.toLowerCase() === "ultra" ||
-    userOptions.map((o) => o.toLowerCase()).includes("europe");
+  const shouldShowEurope = useMemo(
+    () =>
+      userFormule.toLowerCase() === "ultra" ||
+      userOptions.map((o) => o?.toLowerCase?.()).includes("europe"),
+    [userFormule, userOptions]
+  );
 
-  const shouldShowInternational = userFormule.toLowerCase() === "ultra";
+  const shouldShowInternational = useMemo(
+    () => userFormule.toLowerCase() === "ultra",
+    [userFormule]
+  );
+
+  // Ferme le menu quand on change de route (UX clean)
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <>
-      {/* BOUTON BURGER */}
+      {/* Bouton burger */}
       <button
         onClick={() => setOpen(true)}
-        className="md:hidden p-2 text-white fixed top-4 left-4 z-50 bg-blue-700 rounded"
+        className="md:hidden fixed top-4 left-4 z-50 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-2 text-white hover:bg-white/15 transition"
+        aria-label="Ouvrir le menu"
       >
-        <Menu size={24} />
+        <Menu size={22} />
       </button>
 
-      {/* OVERLAY */}
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 bg-black/50 z-40"
-        />
-      )}
-
-      {/* MENU SLIDE-IN */}
+      {/* Overlay */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-[#0b0e1a] border-r border-blue-700 z-50 p-6 flex flex-col gap-6 transform transition-transform",
-          open ? "translate-x-0" : "-translate-x-full"
+          "fixed inset-0 z-40 bg-black/0 opacity-0 pointer-events-none transition-opacity duration-300",
+          open && "bg-black/50 opacity-100 pointer-events-auto"
         )}
-      >
-        {/* Bouton Fermer */}
-        <button
-          onClick={() => setOpen(false)}
-          className="self-end text-white mb-4"
-        >
-          <X size={24} />
-        </button>
+        onClick={() => setOpen(false)}
+      />
 
-        {/* Liens */}
-        <nav className="flex flex-col gap-3">
-          <LinkItem href="/espace-client" icon={LayoutDashboard} label="Tableau de bord" pathname={pathname} onClick={() => setOpen(false)} />
-          <LinkItem href="/espace-client/championnats" icon={Trophy} label="Mes championnats" pathname={pathname} onClick={() => setOpen(false)} />
-          {shouldShowEurope && (
-            <LinkItem href="/espace-client/europe" icon={Globe} label="Europe" pathname={pathname} onClick={() => setOpen(false)} />
+      {/* Drawer */}
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-50 h-full w-[82%] max-w-[320px]",
+          "translate-x-[-100%] transition-transform duration-300 ease-out",
+          open && "translate-x-0"
+        )}
+        aria-hidden={!open}
+      >
+        <div
+          className={cn(
+            "relative h-full px-5 py-6",
+            "bg-white/5 backdrop-blur-md border-r border-white/10",
+            "shadow-[0_10px_50px_rgba(0,0,0,.45)]"
           )}
-          {shouldShowInternational && (
-            <LinkItem href="/espace-client/internationale" icon={Flag} label="Compétitions internationales" pathname={pathname} onClick={() => setOpen(false)} />
-          )}
-          <LinkItem href="/espace-client/echoues" icon={XCircle} label="Analyses non confirmées" pathname={pathname} onClick={() => setOpen(false)} />
-          <LinkItem href="/espace-client/compte" icon={User} label="Mon compte" pathname={pathname} onClick={() => setOpen(false)} />
-          <LinkItem href="/espace-client/rapport" icon={BarChart2} label="Statistiques" pathname={pathname} onClick={() => setOpen(false)} />
-        </nav>
-      </div>
+        >
+          {/* Glow top */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-0 right-0 top-0 h-16 -translate-y-8 bg-gradient-to-b from-emerald-400/10 via-white/10 to-transparent blur-2xl"
+          />
+
+          {/* Header: logo + close */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/logo-insight-x.png"
+                alt="Insight-X"
+                width={135}
+                height={34}
+                className="opacity-90"
+                priority
+              />
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-lg p-2 text-white/80 hover:text-white hover:bg-white/10 transition"
+              aria-label="Fermer le menu"
+            >
+              <X size={22} />
+            </button>
+          </div>
+
+          {/* Nav */}
+          <nav className="flex flex-col gap-1">
+            <MobileLink
+              href="/espace-client"
+              icon={LayoutDashboard}
+              label="Tableau de bord"
+              pathname={pathname}
+            />
+            <MobileLink
+              href="/espace-client/championnats"
+              icon={Trophy}
+              label="Mes championnats"
+              pathname={pathname}
+            />
+            {shouldShowEurope && (
+              <MobileLink
+                href="/espace-client/europe"
+                icon={Globe}
+                label="Europe"
+                pathname={pathname}
+              />
+            )}
+            {shouldShowInternational && (
+              <MobileLink
+                href="/espace-client/internationale"
+                icon={Flag}
+                label="Compétitions internationales"
+                pathname={pathname}
+              />
+            )}
+            <MobileLink
+              href="/espace-client/echoues"
+              icon={XCircle}
+              label="Analyses non confirmées"
+              pathname={pathname}
+            />
+            <MobileLink
+              href="/espace-client/compte"
+              icon={User}
+              label="Mon compte"
+              pathname={pathname}
+            />
+            <MobileLink
+              href="/espace-client/rapport"
+              icon={BarChart2}
+              label="Statistiques"
+              pathname={pathname}
+            />
+          </nav>
+
+          {/* Contact */}
+          <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-3 text-center">
+            <h2 className="text-sm font-semibold text-white">Besoin d’aide ?</h2>
+            <p className="mt-1 text-xs text-white/70">
+              Écris-nous :{" "}
+              <span className="font-mono text-white">contact@insight-x.fr</span>
+            </p>
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText("contact@insight-x.fr")}
+              className="mt-2 rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[11px] text-white/90 hover:bg-white/15"
+            >
+              Copier l’adresse
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-6 select-none p-1 text-center text-[10px] text-white/40">
+            v1.0 • Insight-X
+          </div>
+        </div>
+      </aside>
     </>
   );
 }
 
-// Composant lien réutilisable
-function LinkItem({
+function MobileLink({
   href,
   icon: Icon,
   label,
   pathname,
-  onClick,
 }: {
   href: string;
   icon: LucideIcon;
   label: string;
   pathname: string;
-  onClick: () => void;
 }) {
-  const isActive = pathname === href;
+  // actif si route exacte ou sous-route
+  const isActive =
+    pathname === href ||
+    (href !== "/espace-client" && pathname.startsWith(href + "/"));
+
   return (
     <Link
       href={href}
-      onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors",
+        "group relative flex items-center gap-3 rounded-lg px-3 py-2",
+        "text-sm font-medium transition-colors",
         isActive
-          ? "bg-blue-700 text-white shadow"
-          : "text-gray-300 hover:bg-[#1e293b] hover:text-white"
+          ? "bg-emerald-400/15 text-white"
+          : "text-white/75 hover:bg-white/8 hover:text-white"
       )}
     >
-      <Icon size={18} />
-      {label}
+      {/* barre active à gauche */}
+      <span
+        aria-hidden
+        className={cn(
+          "absolute left-0 top-1/2 h-6 -translate-y-1/2 rounded-r transition-all",
+          isActive
+            ? "w-1.5 bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,.6)]"
+            : "w-0 bg-transparent"
+        )}
+      />
+      <Icon
+        size={18}
+        className={cn(
+          "shrink-0 transition-transform",
+          isActive ? "scale-105 text-emerald-300" : "text-white/70 group-hover:text-white"
+        )}
+      />
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
