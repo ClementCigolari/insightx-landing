@@ -59,35 +59,36 @@ export default function Hero() {
           </motion.p>
 
           {/* Boutons */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-8 flex items-center justify-center gap-3"
-          >
-            {/* CTA principal avec “pulse” d’attention */}
-            <motion.div
-              initial={{ scale: 1 }}
-              animate={{ scale: [1, 1.06, 1] }}
-              transition={{ delay: 2, duration: 1.2, repeat: 2 }}
-              className="inline-block"
-            >
-              <Link
-               href="#pricing"
-              className="px-8 py-4 bg-green-500 text-black font-bold text-lg rounded-xl shadow-lg 
-                         animate-pulse hover:scale-110 hover:shadow-green-500/50 transition-all duration-300"
-            >
-                 Commencer dès 4,99 €
-              </Link>
-            </motion.div>
+<motion.div
+  initial={{ opacity: 0, y: 16 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, delay: 0.7 }}
+  className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto"
+>
+  {/* CTA principal */}
+  <motion.div
+    initial={{ scale: 1 }}
+    animate={{ scale: [1, 1.06, 1] }}
+    transition={{ delay: 2, duration: 1.2, repeat: 2 }}
+    className="w-full sm:w-auto"
+  >
+    <Link
+      href="#pricing"
+      className="w-full block text-center px-8 py-4 bg-green-500 text-black font-bold text-lg rounded-xl shadow-lg 
+                 animate-pulse hover:scale-105 hover:shadow-green-500/50 transition-all duration-300"
+    >
+      Commencer dès 4,99 €
+    </Link>
+  </motion.div>
 
-            <Link
-              href="#methode"
-              className="rounded-xl border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10"
-            >
-              Voir la méthode V7
-            </Link>
-          </motion.div>
+  {/* Second CTA */}
+  <Link
+    href="#methode"
+    className="w-full sm:w-auto block text-center rounded-xl border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10"
+  >
+    Voir la méthode V7
+  </Link>
+</motion.div>
 
           {/* Confiance */}
           <motion.div
